@@ -73,19 +73,14 @@ class HomeController extends Controller
         $categoryGroups = [];
 
         try {
-            $allProductIds = [];
-            foreach ($hotProductsData['categories'] as $categoryGroup) {
-                if (isset($categoryGroup['products']) && is_array($categoryGroup['products'])) {
-                    $allProductIds = array_merge($allProductIds, $categoryGroup['products']);
-                }
-            }
+            $allProductIds = HomeRepo::getInstance()->getHomeHotProductIdsOrdered();
 
             if (empty($allProductIds)) {
                 return [];
             }
 
             $products = ProductRepo::getInstance()->builder(['active' => true])
-                ->whereIn('products.id', array_unique($allProductIds))
+                ->whereIn('products.id', $allProductIds)
                 ->with(['masterSku', 'skus', 'translation'])
                 ->get();
 

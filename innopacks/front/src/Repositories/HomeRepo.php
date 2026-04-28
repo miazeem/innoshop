@@ -10,8 +10,10 @@
 namespace InnoShop\Front\Repositories;
 
 use Exception;
+use Illuminate\Support\Collection;
 use InnoShop\Common\Models\Product;
 use InnoShop\Common\Repositories\CategoryRepo;
+use InnoShop\Common\Repositories\ProductRepo;
 
 class HomeRepo
 {
@@ -206,5 +208,73 @@ class HomeRepo
         } catch (Exception $e) {
             return [];
         }
+    }
+
+    /**
+     * Product IDs from `home_hot_products` (admin Theme Settings → 首页产品), in panel order.
+     * Duplicates are removed (first occurrence wins).
+     *
+     * @return array<int, int>
+     */
+    public function getHomeHotProductIdsOrdered(): array
+    {
+        $hotProductsSetting = system_setting('home_hot_products', '{}');
+        if (is_array($hotProductsSetting)) {
+            $hotProductsData = $hotProductsSetting;
+        } else {
+            $hotProductsData = json_decode($hotProductsSetting, true) ?: [];
+        }
+
+        $ids = [];
+        foreach ($hotProductsData['categories'] ?? [] as $categoryGroup) {
+            foreach ($categoryGroup['products'] ?? [] as $productId) {
+                $id = (int) $productId;
+                if ($id > 0) {
+                    $ids[] = $id;
+                }
+            }
+        }
+
+        $seen   = [];
+        $unique = [];
+        foreach ($ids as $id) {
+            if (! isset($seen[$id])) {
+                $seen[$id] = true;
+                $unique[]  = $id;
+            }
+        }
+
+        return $unique;
+    }
+
+    /**
+     * Active Product models for theme home grids, matching admin order from `home_hot_products`.
+     * Returns empty collection when the setting has no product IDs.
+     *
+     * @return Collection<int, Product>
+     */
+    public function getHomeHotProductsOrdered(): Collection
+    {
+        $orderedIds = $this->getHomeHotProductIdsOrdered();
+        if ($orderedIds === []) {
+            return collect();
+        }
+
+        $products = ProductRepo::getInstance()
+            ->builder(['active' => true])
+            ->whereIn('products.id', $orderedIds)
+            ->with(['masterSku'])
+            ->get()
+            ->keyBy('id');
+
+        $ordered = collect();
+        foreach ($orderedIds as $id) {
+            $product = $products->get($id);
+            if ($product) {
+                $ordered->push($product);
+            }
+        }
+
+        return $ordered;
     }
 }
