@@ -25,6 +25,61 @@ function insertMediaFile(ed, file) {
   }
 }
 
+function addCharCounter(ed) {
+  ed.on('init', function() {
+    var original = ed.getElement();
+    var max = parseInt(original.getAttribute('data-maxlength') || '0', 10);
+    var container = ed.getContainer();
+    if (!container) return;
+
+    var statusbar = container.querySelector('.tox-statusbar');
+    if (!statusbar) return;
+
+    // Clean up stray ">" text nodes from statusbar
+    var children = statusbar.childNodes;
+    for (var i = children.length - 1; i >= 0; i--) {
+      if (children[i].nodeType === 3 && children[i].textContent.trim() === '>') {
+        statusbar.removeChild(children[i]);
+      }
+    }
+
+    // Also check inside text-container for ">" text nodes
+    var textContainer = statusbar.querySelector('.tox-statusbar__text-container');
+    if (textContainer) {
+      var tc = textContainer.childNodes;
+      for (var j = tc.length - 1; j >= 0; j--) {
+        if (tc[j].nodeType === 3 && tc[j].textContent.trim() === '>') {
+          textContainer.removeChild(tc[j]);
+        }
+      }
+    }
+
+    var resizeHandle = statusbar.querySelector('.tox-statusbar__resize-handle');
+    var counter = document.createElement('span');
+    counter.className = 'tox-statusbar__char-count';
+    counter.style.cssText = 'margin-left:8px;font-size:12px;white-space:nowrap;color:#666;';
+    counter.textContent = '0' + (max ? '/' + max : ' chars');
+
+    if (resizeHandle) {
+      statusbar.insertBefore(counter, resizeHandle);
+    } else {
+      statusbar.appendChild(counter);
+    }
+
+    function update() {
+      var text = ed.getContent({ format: 'text' }) || '';
+      var len = text.length;
+      counter.textContent = len + (max ? '/' + max : ' chars');
+      if (max) {
+        counter.style.color = len >= max ? '#dc3545' : (len > max * 0.9 ? '#e67e22' : '#666');
+      }
+    }
+
+    ed.on('input keyup change setcontent paste', update);
+    update();
+  });
+}
+
 function setupEditor(ed) {
   ed.ui.registry.addButton('toolbarImageButton', {
     icon: 'image',
@@ -119,6 +174,9 @@ export function initEditor() {
       "微软雅黑='Microsoft YaHei';黑体=黑体;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Georgia=georgia,palatino;Helvetica=helvetica;Times New Roman=times new roman,times;Verdana=verdana,geneva",
     fontsize_formats: '10px 12px 14px 16px 18px 24px 36px 48px 56px 72px 96px',
     lineheight_formats: '1 1.1 1.2 1.3 1.4 1.5 1.7 2.4 3 4',
-    setup: setupEditor,
+    setup: function(ed) {
+      setupEditor(ed);
+      addCharCounter(ed);
+    },
   });
 }

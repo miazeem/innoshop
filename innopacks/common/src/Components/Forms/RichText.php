@@ -29,7 +29,9 @@ class RichText extends Component
 
     public ?string $elID;
 
-    public function __construct(string $name, string $title = '', bool $required = false, $value = null, bool $multiple = false, string $elID = '', $generate = false, bool $translate = false)
+    public string $maxlength;
+
+    public function __construct(string $name, string $title = '', bool $required = false, $value = null, bool $multiple = false, string $elID = '', $generate = false, bool $translate = false, string $maxlength = '')
     {
         if (! $multiple) {
             $value = html_entity_decode($value, ENT_QUOTES);
@@ -43,6 +45,7 @@ class RichText extends Component
         $this->elID      = $elID;
         $this->generate  = $generate;
         $this->translate = $translate && has_translator();
+        $this->maxlength = $maxlength;
     }
 
     public function render()

@@ -86,8 +86,8 @@
 </div>
 
 @push('footer')
-<script src="https://unpkg.com/element-plus/dist/index.full.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+<script src="{{ asset('vendor/element-plus/index.full.js') }}"></script>
+<link rel="stylesheet" href="{{ asset('vendor/element-plus/index.css') }}">
 <script>
   const productApp = Vue.createApp({
     data() {

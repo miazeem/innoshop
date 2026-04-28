@@ -1,6 +1,6 @@
 <div class="tab-pane fade mt-3" id="seo-tab-pane" role="tabpanel" aria-labelledby="seo-tab" tabindex="0">
   <x-common-form-input title="{{ __('panel/common.slug') }}" name="slug" :value="old('slug', $article->slug ?? '')"
-    placeholder="{{ __('panel/common.slug') }}" column="article_slug" :generate="true"
+    placeholder="{{ __('panel/common.slug') }}" column="article_slug" :generate="true" maxlength="60"
     description="{{ __('panel/common.slug_description') }}" />
 
   <div class="mb-3">

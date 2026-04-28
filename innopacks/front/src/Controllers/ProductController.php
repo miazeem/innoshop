@@ -120,7 +120,7 @@ class ProductController extends Controller
 
         $reviews    = ReviewRepo::getInstance()->getListByProduct($product, 10);
         $customerID = current_customer_id();
-        $variables  = ProductVariable::collection($product->variables)->jsonSerialize();
+        $variables  = ProductVariable::collection($product->variables ?? [])->jsonSerialize();
 
         $product->load([
             'productOptions' => function ($query) {

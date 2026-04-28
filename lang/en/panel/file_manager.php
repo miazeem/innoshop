@@ -23,7 +23,7 @@ return [
     'sort_by_name'      => 'By Name',
     'sort_desc'         => 'Desc',
     'sort_asc'          => 'Asc',
-    'root_name'         => 'Image Space',
+    'root_name'         => 'Root Directory',
     'oss_title'         => 'OSS File Manager',
 
     'prompt' => 'Prompt',

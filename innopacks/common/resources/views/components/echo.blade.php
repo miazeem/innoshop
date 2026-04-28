@@ -4,16 +4,22 @@
 <script>
   (function() {
     try {
-      window.Echo = new Echo.default({
+      var echoConfig = {
         broadcaster: 'reverb',
         key: '{{ config('broadcasting.connections.reverb.key') }}',
         wsHost: '{{ config('broadcasting.connections.reverb.options.host', 'localhost') }}',
-        wsPort: {{ config('broadcasting.connections.reverb.options.port', 8080) }},
-        wssPort: {{ config('broadcasting.connections.reverb.options.port', 8080) }},
         forceTLS: {{ config('broadcasting.connections.reverb.options.scheme') === 'https' ? 'true' : 'false' }},
         enabledTransports: ['ws', 'wss'],
         disabledTransports: ['sockjs'],
-      });
+      };
+
+      @php $frontendPort = env('REVERB_FRONTEND_PORT', env('REVERB_PORT')); @endphp
+      @if($frontendPort)
+      echoConfig.wsPort = {{ $frontendPort }};
+      echoConfig.wssPort = {{ $frontendPort }};
+      @endif
+
+      window.Echo = new Echo.default(echoConfig);
     } catch (e) {
       console.warn('[Reverb] Echo initialization failed:', e.message);
     }

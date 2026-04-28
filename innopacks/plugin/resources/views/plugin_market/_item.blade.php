@@ -11,7 +11,7 @@
             <img src="{{ $product['image_small'] ?? ''}}"
                  class="plugin-logo-img"
                  alt="{{ $product['name'] }}"
-                 onerror="this.src='{{ asset('images/default-plugin.png') }}'">
+                 onerror="this.onerror=null;this.src='{{ asset('images/placeholder.png') }}'">
           </div>
           <div class="flex-grow-1 min-w-0">
             <h6 class="plugin-name mb-1 fw-semibold text-dark">

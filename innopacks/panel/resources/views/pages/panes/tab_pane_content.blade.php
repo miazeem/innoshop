@@ -21,8 +21,10 @@
       @php($localeCode = $locale->code)
       <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="tab-contentx-{{ $localeCode }}">
         <input type="hidden" name="translations[{{ $localeCode }}][locale]" value="{{ $localeCode }}">
-        <textarea rows="4" type="text" name="translations[{{ $localeCode }}][content]" class="tinymce" id="content-{{ $localeCode }}"
-          placeholder="{{ __('panel/article.content') }}">{{ old('translations.' . $localeCode . '.content', $page->translate($localeCode, 'content')) }}</textarea>
+        <x-common-form-rich-text name="translations[{{ $localeCode }}][content]"
+                                 elID="content-{{ $localeCode }}"
+                                 :value="old('translations.' . $localeCode . '.content', $page->translate($localeCode, 'content'))"
+                                 maxlength="20000" />
       </div>
     @endforeach
   </div>

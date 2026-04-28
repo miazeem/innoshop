@@ -1,7 +1,3 @@
-@push('header')
-  <script src="{{ asset('vendor/vue/3.5/vue.global.prod.js') }}"></script>
-@endpush
-
 <div class="tab-pane fade mt-4" id="options-tab-pane" role="tabpanel"
      aria-labelledby="options-tab" tabindex="3">
   <div class="row">
@@ -24,9 +20,12 @@
                     <i class="bi bi-list-ul me-2"></i>{{ __('panel/product.available_options') }}
                     <span class="badge bg-secondary ms-2">@{{ availableOptionsFiltered.length }}</span>
                   </span>
-                  <a href="{{ panel_route('options.index') }}" class="btn btn-sm btn-outline-primary" target="_blank" title="{{ __('panel/options.option_management') }}">
+                  @php $optionsRoute = ($routePrefix ?? 'panel') === 'panel' ? panel_route('options.index') : ''; @endphp
+                  @if($optionsRoute)
+                  <a href="{{ $optionsRoute }}" class="btn btn-sm btn-outline-primary" target="_blank" title="{{ __('panel/options.option_management') }}">
                     <i class="bi bi-gear me-1"></i>{{ __('panel/options.option_management') }}
                   </a>
+                  @endif
                 </h6>
                 
                 <!-- Search box -->

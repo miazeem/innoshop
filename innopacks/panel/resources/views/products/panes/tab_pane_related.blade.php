@@ -4,5 +4,5 @@
                                   :value="old('related_ids', $product->relations->pluck('relation_id')->toArray() ?? [])"
                                   :selectedItems="$selectedRelatedProducts"
                                   placeholder="{{ __('panel/product.searching_products') }}"
-                                  title="{{ __('panel/product.related_products') }}" api="{{ url('api/panel/products') }}"/>
+                                  title="{{ __('panel/product.related_products') }}" api="{{ $productApiUrl ?? url('api/panel/products') }}"/>
 </div>

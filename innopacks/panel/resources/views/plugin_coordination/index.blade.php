@@ -115,7 +115,7 @@
 @endpush
 
 @push('footer')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="{{ asset('vendor/vuedraggable/sortable.min.js') }}"></script>
 <script>
 const pluginsData = @json($configs);
 

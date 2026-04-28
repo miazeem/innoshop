@@ -79,6 +79,9 @@ Route::middleware(['admin_auth:admin'])
         Route::resource('/tags', Controllers\TagController::class);
         Route::put('/tags/{tag}/active', [Controllers\TagController::class, 'active'])->name('tags.active');
 
+        Route::resource('/announcements', Controllers\AnnouncementController::class);
+        Route::put('/announcements/{announcement}/active', [Controllers\AnnouncementController::class, 'active'])->name('announcements.active');
+
         Route::resource('/pages', Controllers\PageController::class);
         Route::put('/pages/{page}/active', [Controllers\PageController::class, 'active'])->name('pages.active');
 

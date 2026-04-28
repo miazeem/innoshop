@@ -22,6 +22,12 @@
     return meta && meta.content ? meta.content.replace(/\/$/, "") : "";
   }
 
+  /**
+   * The storage prefix added by StorageService (matches PHP STORAGE_PREFIX).
+   * Stored paths from file manager look like "static/media/catalog/img.png".
+   */
+  var _storagePrefix = "static/media/";
+
   function previewUrlFromStoredPath(path) {
     if (!path || typeof path !== "string") {
       return "";
@@ -33,12 +39,22 @@
     if (p.startsWith("http://") || p.startsWith("https://")) {
       return p;
     }
-    const base = storageBaseUrl() || assetBaseUrl();
-    const normalized = p.replace(/^\/+/, "");
-    if (!base) {
-      return "/" + normalized;
+    var normalized = p.replace(/^\/+/, "");
+
+    // Paths that already carry the storage prefix (e.g. "static/media/catalog/img.png")
+    // should be resolved via the asset base URL, NOT via storageBaseUrl which would
+    // duplicate the prefix.
+    if (normalized.startsWith(_storagePrefix)) {
+      var assetBase = assetBaseUrl();
+      return assetBase ? assetBase + "/" + normalized : "/" + normalized;
     }
-    return base + "/" + normalized;
+
+    // Bare keys (e.g. "catalog/img.png") — prepend storage base URL
+    var sBase = storageBaseUrl();
+    if (sBase) {
+      return sBase + "/" + normalized;
+    }
+    return "/" + normalized;
   }
 
   function storedPathFromFileManager(file) {

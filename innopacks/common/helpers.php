@@ -846,11 +846,15 @@ if (! function_exists('front_route')) {
      */
     function front_route($name, mixed $parameters = [], bool $absolute = true): string
     {
-        if (hide_url_locale() || locales()->isEmpty()) {
-            return route('front.'.$name, $parameters, $absolute);
-        }
+        try {
+            if (hide_url_locale() || locales()->isEmpty()) {
+                return route('front.'.$name, $parameters, $absolute);
+            }
 
-        return route(front_locale_code().'.front.'.$name, $parameters, $absolute);
+            return route(front_locale_code().'.front.'.$name, $parameters, $absolute);
+        } catch (Exception $e) {
+            return url('/');
+        }
     }
 }
 

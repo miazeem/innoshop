@@ -3,11 +3,19 @@
     <input type="{{ $type }}" name="{{ $name }}" class="form-control {{ $error ? 'is-invalid' : '' }}"
            value="{{ $value }}" placeholder="{{ $placeholder ?: $title }}" @if ($required) required
            @endif @if($disabled) disabled @endif @if($readonly) readonly @endif
+           @if($maxlength ?? '') maxlength="{{ $maxlength }}" @endif
            data-column="{{ $column ?? '' }}" data-lang="{{ $localeCode ?? '' }}" />
 
-    @if ($description ?? '')
-      <div class="text-secondary"><small>{!! $description !!}</small></div>
-    @endif
+    <div class="d-flex justify-content-between">
+      @if ($description ?? '')
+        <div class="text-secondary"><small>{!! $description !!}</small></div>
+      @else
+        <div></div>
+      @endif
+      @if($maxlength ?? '')
+        <small class="text-secondary char-counter" data-target="{{ $name }}"><span class="current">{{ strlen($value ?? '') }}</span>/{{ $maxlength }}</small>
+      @endif
+    </div>
 
     <span class="invalid-feedback" role="alert">
       @if ($error)
@@ -66,3 +74,27 @@
 
   {{ $slot }}
 </x-panel::form.row>
+
+@if($maxlength ?? '')
+@push('footer')
+<script>
+  (function() {
+    var counters = document.querySelectorAll('.char-counter[data-target="{{ $name }}"]');
+    if (!counters.length) return;
+    var counter = counters[counters.length - 1];
+    var input = document.querySelector('input[name="{{ $name }}"]');
+    if (!input || !counter) return;
+    var current = counter.querySelector('.current');
+    var max = {{ $maxlength }};
+    function update() {
+      var len = input.value.length;
+      current.textContent = len;
+      counter.classList.toggle('text-danger', len >= max);
+      counter.classList.toggle('text-secondary', len < max);
+    }
+    input.addEventListener('input', update);
+    update();
+  })();
+</script>
+@endpush
+@endif

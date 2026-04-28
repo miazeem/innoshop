@@ -23,7 +23,7 @@ return [
     'sort_by_name'      => '按名称',
     'sort_desc'         => '降序',
     'sort_asc'          => '升序',
-    'root_name'         => '图片空间',
+    'root_name'         => '根目录',
     'oss_title'         => 'OSS 文件管理',
 
     'prompt' => '提示',

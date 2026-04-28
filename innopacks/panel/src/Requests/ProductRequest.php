@@ -67,9 +67,9 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         if ($this->product) {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:products,slug,'.$this->product->id;
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:products,slug,'.$this->product->id;
         } else {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:products,slug';
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:products,slug';
         }
 
         $defaultLocale = setting_locale_code();

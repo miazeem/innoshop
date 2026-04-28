@@ -21,6 +21,9 @@
   <script src="{{ asset('vendor/vue/3.5/vue.global' . (config('app.debug') ? '' : '.prod') . '.js') }}"></script>
   <script src="{{ asset('vendor/element-plus/index.full.js') }}"></script>
   <script src="{{ asset('vendor/element-plus/icons.min.js') }}"></script>
+  @if(str_starts_with(panel_locale_code(), 'zh'))
+  <script src="{{ asset('vendor/element-plus/zh-cn.js') }}"></script>
+  @endif
   <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('vendor/layer/3.5.1/layer.js') }}"></script>
   <script src="{{ asset('vendor/laydate/laydate.js') }}"></script>

@@ -24,6 +24,8 @@ Route::get('/theme-market/{slug}', [ThemeMarketController::class, 'show'])->name
 
 Route::get('/marketplaces/{id}/download', [MarketplaceController::class, 'download'])->name('marketplaces.download');
 Route::post('/marketplaces/quick_checkout', [MarketplaceController::class, 'quickCheckout'])->name('marketplaces.quick_checkout');
+Route::get('/marketplaces/order_status/{number}', [MarketplaceController::class, 'checkOrderStatus'])->name('marketplaces.order_status');
 Route::put('/marketplaces/domain_token', [MarketplaceController::class, 'updateDomainToken'])->name('marketplaces.domain_token');
+Route::put('/marketplaces/auth_token', [MarketplaceController::class, 'updateAuthToken'])->name('marketplaces.auth_token');
 Route::get('/marketplaces/get_token', [MarketplaceController::class, 'getToken'])->name('marketplaces.get_token');
 Route::post('/marketplaces/clear_cache', [MarketplaceController::class, 'clearCache'])->name('marketplaces.clear_cache');

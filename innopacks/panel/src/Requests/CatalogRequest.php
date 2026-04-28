@@ -34,9 +34,9 @@ class CatalogRequest extends FormRequest
     public function rules(): array
     {
         if ($this->catalog) {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:catalogs,slug,'.$this->catalog->id;
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:catalogs,slug,'.$this->catalog->id;
         } else {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:catalogs,slug';
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:catalogs,slug';
         }
 
         $defaultLocale = setting_locale_code();

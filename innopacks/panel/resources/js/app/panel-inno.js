@@ -334,12 +334,13 @@ export default {
    */
   formatSlug(str) {
     if (!str) return '';
-    
+
     return str
       .toLowerCase() // Convert to lowercase
       .replace(/[^a-z0-9\-\s]/g, '-') // Replace non-alphanumeric characters (except hyphens and spaces) with hyphens
       .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-'); // Replace multiple consecutive hyphens with single hyphen
+      .replace(/-+/g, '-') // Replace multiple consecutive hyphens with single hyphen
+      .substring(0, 60); // Limit to 60 characters
   },
 
   /**

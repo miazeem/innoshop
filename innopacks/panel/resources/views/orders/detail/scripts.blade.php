@@ -1,3 +1,9 @@
+@php
+  $apiBase          = $apiBase ?? 'panel_api';
+  $routePrefix      = $routePrefix ?? 'panel';
+  $showStatusChange = $showStatusChange ?? true;
+  $showShipments    = $showShipments ?? true;
+@endphp
 {{-- Scripts --}}
 <script>
   $(document).ready(function() {
@@ -7,7 +13,7 @@
         event.preventDefault();
         var comment = $(this).val();
         var orderId = $(this).data('order-id');
-        var apiUrl = `${urls.panel_api}/orders/${orderId}/notes`;
+        var apiUrl = `${urls[{!! json_encode($apiBase) !!}]}/orders/${orderId}/notes`;
         axios.post(apiUrl, {
             admin_note: comment,
           })
@@ -19,6 +25,7 @@
       }
     });
 
+    @if($showShipments)
     // Add shipment button handler
     $('#addRow').click(function() {
       $('#editModal').modal('show');
@@ -31,7 +38,7 @@
 
     // View shipment details function
     window.viewShipmentDetails = function(shipmentId) {
-      axios.get(`${urls.panel_api}/shipments/${shipmentId}/traces`)
+      axios.get(`${urls[{!! json_encode($apiBase) !!}]}/shipments/${shipmentId}/traces`)
         .then(function(response) {
           if (response.data && response.data.traces) {
             const tbody = $('#newShipmentModal .modal-body table tbody').last();
@@ -51,6 +58,7 @@
           inno.msg('{{ __('panel/order.no_logistics_information') }}');
         });
     }
+    @endif
   });
 
   // Submit comment function
@@ -58,7 +66,7 @@
     let elment = $('.admin-comment-input');
     let comment = elment.val();
     let orderId = elment.data('order-id');
-    let apiUrl = `${urls.panel_api}/orders/${orderId}/notes`;
+    let apiUrl = `${urls[{!! json_encode($apiBase) !!}]}/orders/${orderId}/notes`;
     axios.post(apiUrl, {
         admin_note: comment,
       })
@@ -73,13 +81,14 @@
       })
   }
 
+  @if($showShipments)
   // Submit edit function
   function submitEdit() {
     const logisticsCompany = $('#logisticsCompany').val();
     const trackingNumber = $('#trackingNumber').val();
     const selectedCompanyName = $('#logisticsCompany option:selected').text();
     const orderId = {{ $order->id }};
-    axios.post(`${urls.panel_api}/orders/${orderId}/shipments`, {
+    axios.post(`${urls[{!! json_encode($apiBase) !!}]}/orders/${orderId}/shipments`, {
       express_code: logisticsCompany,
       express_company: selectedCompanyName,
       express_number: trackingNumber,
@@ -94,20 +103,22 @@
 
   // Delete shipment function
   function deleteShipment(shipmentId) {
-    const apiUrl = `${urls.panel_api}/shipments/${shipmentId}`;
+    const apiUrl = `${urls[{!! json_encode($apiBase) !!}]}/shipments/${shipmentId}`;
     axios.delete(apiUrl)
       .then(function(response) {
         inno.msg('{{ __('panel/order.delete_successfully') }}');
         window.location.reload();
       })
   }
+  @endif
 
+  @if($showStatusChange)
   // Vue.js status app
   const {
     createApp,
     ref
   } = Vue
-  const api = @json(panel_route('orders.change_status', $order));
+  const api = @json(route($routePrefix . '.orders.change_status', $order));
   const statusApp = createApp({
     setup() {
       const statusDialog = ref(false)
@@ -139,4 +150,5 @@
   })
   statusApp.use(ElementPlus);
   statusApp.mount('#status-app');
+  @endif
 </script> 

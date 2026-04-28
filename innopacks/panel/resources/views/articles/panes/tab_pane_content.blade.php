@@ -48,10 +48,11 @@
         <div class="mb-3">
           <input type="hidden" name="translations[{{ $locale->code }}][locale]" value="{{ $locale->code }}">
           <label class="form-label">{{ __('panel/article.content') }}</label>
-          <textarea rows="16" type="text" name="translations[{{ $locale->code }}][content]"
-            class="tinymce" id="content-{{ $locale->code }}"
-            @if(is_setting_locale($locale->code)) required @endif
-            placeholder="{{ __('panel/article.content') }}">{{ old('translations.' . $locale->code . '.content', $article->translate($locale->code, 'content')) }}</textarea>
+          <x-common-form-rich-text name="translations[{{ $locale->code }}][content]"
+                                   elID="content-{{ $locale->code }}"
+                                   :value="old('translations.' . $locale->code . '.content', $article->translate($locale->code, 'content'))"
+                                   :required="is_setting_locale($locale->code)"
+                                   maxlength="20000" />
         </div>
 
         <div class="mb-3">

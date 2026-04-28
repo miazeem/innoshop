@@ -34,9 +34,9 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         if ($this->category) {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:categories,slug,'.$this->category->id;
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:categories,slug,'.$this->category->id;
         } else {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:categories,slug';
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:categories,slug';
         }
 
         $defaultLocale = setting_locale_code();

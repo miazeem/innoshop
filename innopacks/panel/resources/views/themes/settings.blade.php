@@ -598,6 +598,26 @@
       mountPanelLinkPicker(index);
     }
 
+    // Slideshow: override image upload to accept all media (image + video)
+    $(document).on('click', '#tab-setting-slideshow .single-image-upload-wrapper .is-up-file .img-upload-item', function (e) {
+      if ($(e.target).closest('.delete-img, .show-img').length) return;
+      e.stopPropagation();
+      var _self = $(this);
+      inno.fileManagerIframe(function(file) {
+        var val = file.path;
+        var url = file.url;
+        var originUrl = file.origin_url || file.url;
+        _self.find('input').val(val);
+        _self.find('.tool-wrap').removeClass('d-none');
+        if (/\.(mp4|webm|ogg)(\?|$)/i.test(val)) {
+          _self.find('.img-info').html('<i class="bi bi-play-circle fs-3 text-primary"></i>');
+        } else {
+          _self.find('.img-info').html('<img src="' + url + '" class="img-fluid" data-origin-img="' + originUrl + '">');
+        }
+        _self.find('input').trigger('change');
+      }, { multiple: false, type: 'file' });
+    });
+
     $('.settings-nav').on('click', 'a', function () {
       var text = $(this).text();
       $('.setting-header').text(text);

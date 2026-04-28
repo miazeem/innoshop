@@ -198,6 +198,7 @@ class MenuSearchRepo
             ['route' => 'catalogs.index', 'title' => __('panel/menu.catalogs')],
             ['route' => 'tags.index', 'title' => __('panel/menu.tags')],
             ['route' => 'pages.index', 'title' => __('panel/menu.pages')],
+            ['route' => 'announcements.index', 'title' => __('panel/menu.announcements')],
             ['route' => 'file_manager.index', 'title' => __('panel/menu.file_manager')],
         ]);
     }

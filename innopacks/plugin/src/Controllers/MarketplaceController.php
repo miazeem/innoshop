@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use InnoShop\Common\Models\Setting;
 use InnoShop\Common\Repositories\SettingRepo;
 use InnoShop\Plugin\Services\MarketplaceService;
 use Throwable;
@@ -37,6 +38,19 @@ class MarketplaceController
     }
 
     /**
+     * @param  int  $number
+     * @return mixed
+     */
+    public function checkOrderStatus(int $number): mixed
+    {
+        try {
+            return MarketplaceService::getInstance()->checkOrderStatus($number);
+        } catch (\Exception $e) {
+            return json_fail($e->getMessage());
+        }
+    }
+
+    /**
      * @param  Request  $request
      * @return mixed
      * @throws Throwable
@@ -46,6 +60,27 @@ class MarketplaceController
         try {
             $domainToken = $request->get('domain_token');
             SettingRepo::getInstance()->updateSystemValue('domain_token', $domainToken);
+
+            return json_success(common_trans('base.updated_success'));
+        } catch (\Exception $e) {
+            return json_fail($e->getMessage());
+        }
+    }
+
+    /**
+     * @param  Request  $request
+     * @return mixed
+     * @throws Throwable
+     */
+    public function updateAuthToken(Request $request): mixed
+    {
+        try {
+            $authToken = $request->get('auth_token');
+            if ($authToken) {
+                SettingRepo::getInstance()->updateSystemValue('marketplace_auth_token', $authToken);
+            } else {
+                Setting::query()->where('space', 'system')->where('name', 'marketplace_auth_token')->delete();
+            }
 
             return json_success(common_trans('base.updated_success'));
         } catch (\Exception $e) {

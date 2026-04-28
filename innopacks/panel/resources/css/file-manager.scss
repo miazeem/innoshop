@@ -34,8 +34,22 @@ $fm-text-secondary: #909399;
   border-bottom: 1px solid #F0F0F0;
 }
 
+.folder-tree .el-tree {
+  min-width: 100%;
+  width: max-content;
+}
+
 .folder-tree .el-tree-node__label {
   font-size: 14px;
+  overflow: visible;
+}
+
+.folder-tree .el-tree-node__content {
+  overflow: visible;
+}
+
+.folder-tree .custom-tree-node {
+  white-space: nowrap;
 }
 
 .folder-tree-container {
@@ -137,7 +151,7 @@ $fm-text-secondary: #909399;
 /* ========== 文件缩略图 ========== */
 .file-thumb {
   position: relative;
-  padding: 6px;
+  padding: 10px;
   height: 140px;
   display: flex;
   align-items: center;
@@ -180,18 +194,19 @@ $fm-text-secondary: #909399;
 
 .preview-button:hover {
   transform: scale(1.05);
+  cursor: pointer;
 }
 
 /* ========== 文件信息 ========== */
 .file-info {
-  padding: 12px 16px;
+  padding: 6px 10px 4px;
 }
 
 .file-name {
   font-weight: 500;
   color: $fm-text;
-  margin-bottom: 6px;
-  font-size: 14px;
+  margin-bottom: 4px;
+  font-size: 13px;
   line-height: 1.4;
   word-break: break-all;
   display: -webkit-box;
@@ -204,7 +219,7 @@ $fm-text-secondary: #909399;
 .file-type {
   font-size: 12px;
   color: $fm-text-secondary;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 /* ========== 多选框 ========== */
@@ -316,11 +331,11 @@ $fm-text-secondary: #909399;
   border-color: #ebeef5;
 }
 
-.el-button [class*="el-icon-"] {
+.el-button .el-icon {
   margin-right: 5px;
 }
 
-.file-card-context-menu li i {
+.file-card-context-menu li .el-icon {
   margin-right: 8px;
 }
 
@@ -381,8 +396,8 @@ $fm-text-secondary: #909399;
   color: $fm-text-secondary;
 }
 
-.file-card:hover .video-thumb i,
-.file-card:hover .file-icon-default i {
+.file-card:hover .video-thumb .el-icon,
+.file-card:hover .file-icon-default .el-icon {
   color: $fm-primary;
   transform: scale(1.1);
   transition: all 0.3s;
@@ -440,7 +455,7 @@ $fm-text-secondary: #909399;
   height: 200px;
 }
 
-.file-uploader .el-icon-upload {
+.file-uploader .el-icon--upload {
   margin: 40px 0 16px;
   font-size: 48px;
   color: $fm-primary;
@@ -556,60 +571,91 @@ $fm-text-secondary: #909399;
 
 .el-tree-node__content {
   height: auto;
-  min-height: 32px;
-  padding: 4px 0;
+  min-height: 36px;
+  padding: 2px 0;
 }
 
 .el-tree-node__content:hover {
-  background-color: #f5f7fa;
+  background-color: transparent;
 }
 
+/* 展开箭头：独立可点击区域 */
 .el-tree-node__expand-icon {
-  color: $fm-text-secondary;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #999;
+  font-size: 14px;
+  transition: all 0.2s;
+  margin-right: 2px;
+  flex-shrink: 0;
+  padding: 0;
 }
 
-.el-tree-node__content .el-icon-folder,
-.el-tree-node__content .el-icon-folder-opened {
+.el-tree-node__expand-icon:hover {
+  background-color: #e8e8e8;
+  color: #555;
+}
+
+.el-tree-node__expand-icon.expanded {
+  color: $fm-primary;
+}
+
+.el-tree-node__expand-icon.is-leaf {
+  visibility: hidden;
+}
+
+.el-tree-node__content .el-icon {
   font-size: 16px;
 }
 
 .el-tree-node.is-current > .el-tree-node__content {
-  background-color: $fm-primary-highlight !important;
-  color: $fm-primary;
+  background-color: transparent !important;
+  color: inherit;
 }
 
-.el-tree-node.is-expanded > .el-tree-node__content .el-icon-folder {
+.el-tree-node.is-expanded > .el-tree-node__content .el-icon {
   color: $fm-primary;
 }
 
 .el-tree-node__wrapper {
   width: 100%;
-  padding: 8px;
+  padding: 4px 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 .el-tree-node__wrapper:hover {
-  background-color: #f5f7fa;
+  background-color: #f0f2f5;
 }
 
 .el-tree-node.is-current > .el-tree-node__content > .el-tree-node__wrapper {
   background-color: $fm-primary-highlight !important;
   color: $fm-primary;
+  font-weight: 500;
 }
 
 .custom-tree-node {
   flex: 1;
   display: flex;
   align-items: center;
-  font-size: 12px;
-  padding: 0 8px;
+  font-size: 13px;
+  padding: 2px 6px;
 
-  .el-icon-folder,
-  .el-icon-folder-opened {
-    margin-right: 4px;
+  .el-icon {
+    margin-right: 5px;
     color: $fm-primary;
+    font-size: 15px;
+  }
+
+  span {
+    cursor: pointer;
   }
 }
 
@@ -700,7 +746,7 @@ $fm-text-secondary: #909399;
   width: 100%;
 }
 
-.folder-icon i {
+.folder-icon .el-icon {
   transition: all 0.3s;
 }
 
@@ -711,7 +757,7 @@ $fm-text-secondary: #909399;
   transition: all 0.3s;
 }
 
-.file-card:hover .folder-icon i {
+.file-card:hover .folder-icon .el-icon {
   transform: scale(1.1);
   color: $fm-primary-light;
 }
@@ -738,8 +784,7 @@ $fm-text-secondary: #909399;
   border-radius: 4px;
 }
 
-.el-tree-node.is-dragging .el-icon-folder,
-.el-tree-node.is-dragging .el-icon-folder-opened {
+.el-tree-node.is-dragging .el-icon {
   color: $fm-primary;
 }
 

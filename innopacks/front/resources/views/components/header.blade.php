@@ -1,5 +1,29 @@
 @hookinsert('layout.header.top')
 
+@php
+  $announcementItems = fire_hook_filter('front.announcements', []);
+@endphp
+
+@if(!empty($announcementItems))
+<div class="announcement-bar">
+  <div class="container">
+    <div class="swiper announcement-bar__swiper" id="announcementBarSwiper">
+      <div class="swiper-wrapper">
+        @foreach($announcementItems as $item)
+          <div class="swiper-slide">
+            @if(!empty($item['url']))
+              <a href="{{ $item['url'] }}" class="announcement-bar__link">{{ $item['text'] }}</a>
+            @else
+              <span>{{ $item['text'] }}</span>
+            @endif
+          </div>
+        @endforeach
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+
 <header id="appHeader">
   <div class="header-top">
     <div class="container d-flex justify-content-between align-items-center">
@@ -227,3 +251,19 @@
 </header>
 
 @hookinsert('layout.header.bottom')
+
+@if(!empty($announcementItems))
+@push('footer')
+<script>
+  if (typeof Swiper !== 'undefined') {
+    new Swiper('#announcementBarSwiper', {
+      direction: 'vertical',
+      loop: true,
+      autoplay: { delay: 3500, disableOnInteraction: false },
+      allowTouchMove: false,
+      speed: 500,
+    });
+  }
+</script>
+@endpush
+@endif

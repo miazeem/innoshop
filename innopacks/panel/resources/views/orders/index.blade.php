@@ -1,4 +1,10 @@
-@extends('panel::layouts.app')
+@php
+  $routePrefix       = $routePrefix ?? 'panel';
+  $layoutView        = $layoutView ?? 'panel::layouts.app';
+  $showExport        = $showExport ?? true;
+  $showCustomerLink  = $showCustomerLink ?? true;
+@endphp
+@extends($layoutView)
 @section('body-class', '')
 
 @section('title', __('panel/menu.orders'))
@@ -11,15 +17,17 @@
   <div class="card h-min-600">
     <div class="card-body">
       <x-panel-data-data-search
-        :action="panel_route('orders.index')"
+        :action="route($routePrefix . '.orders.index')"
         :searchFields="$searchFields ?? []"
         :filters="$filterButtons ?? []"
         :enableDateRange="true"
       >
         <x-slot name="toolbarRight">
-          <a href="{{ panel_route('orders.export.batch') }}?{{ http_build_query(request()->query()) }}" class="btn btn-sm btn-outline-secondary">
+          @if($showExport)
+          <a href="{{ route($routePrefix . '.orders.export.batch') }}?{{ http_build_query(request()->query()) }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-file-earmark-excel"></i> {{ __('panel/common.export') }}
           </a>
+          @endif
         </x-slot>
       </x-panel-data-data-search>
       @hookinsert('panel.orders.index.criteria.after')
@@ -59,8 +67,8 @@
                     </div>
                   </td>
                   <td>
-                    @if ($item->customer_id > 0)
-                      <a href="{{ panel_route('customers.edit', $item->customer_id) }}" class="text-decoration-none"
+                    @if ($item->customer_id > 0 && $showCustomerLink)
+                      <a href="{{ route($routePrefix . '.customers.edit', $item->customer_id) }}" class="text-decoration-none"
                       target="_blank">
                         {{ $item->customer_name }}
                       </a>
@@ -75,7 +83,7 @@
                   @hookinsert('panel.orders.index.row.extra', $item)
                   <td>{{ $item->created_at }}</td>
                   <td>
-                    <a href="{{ panel_route('orders.show', [$item->id]) }}"
+                    <a href="{{ route($routePrefix . '.orders.show', [$item->id]) }}"
                       class="btn btn-sm btn-outline-primary">{{ __('common/base.view') }}</a>
                   </td>
                 </tr>

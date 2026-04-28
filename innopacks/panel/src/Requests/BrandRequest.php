@@ -31,9 +31,9 @@ class BrandRequest extends FormRequest
     public function rules(): array
     {
         if ($this->brand) {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:brands,slug,'.$this->brand->id;
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:brands,slug,'.$this->brand->id;
         } else {
-            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|unique:brands,slug';
+            $slugRule = 'nullable|regex:/^[a-zA-Z0-9-]+$/|max:60|unique:brands,slug';
         }
 
         $defaultLocale = setting_locale_code();

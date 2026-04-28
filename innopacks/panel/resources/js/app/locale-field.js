@@ -145,8 +145,11 @@ const localeField = {
 
         if (!frontLocale || !modalId) return;
 
-        // Check the modal's front locale input value
-        const $frontInput = $wrapper.find('.locale-modal-row[data-locale="' + frontLocale + '"] input.form-control, .locale-modal-row[data-locale="' + frontLocale + '"] textarea.form-control');
+        // Check the modal's front locale input value; fall back to primary input when no modal exists (single language)
+        let $frontInput = $wrapper.find('.locale-modal-row[data-locale="' + frontLocale + '"] input.form-control, .locale-modal-row[data-locale="' + frontLocale + '"] textarea.form-control');
+        if ($frontInput.length === 0) {
+          $frontInput = $wrapper.find("> .input-group .locale-primary-input");
+        }
         const val = $frontInput.val() || "";
 
         if (!val.trim()) {

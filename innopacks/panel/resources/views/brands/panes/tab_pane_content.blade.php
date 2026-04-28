@@ -53,6 +53,7 @@
                                    elID="content-{{ $locale->code }}"
                                    value="{{ old('translations.' . $locale->code . '.content', $brand->translate($locale->code, 'content')) }}"
                                    placeholder="{{ __('panel/brand.content') }}"
+                                   maxlength="20000"
                                    data-locale="{{ $locale->code }}"/>
         </div>
 

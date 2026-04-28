@@ -1,21 +1,6 @@
 @push('header')
-  <script src="{{ asset('vendor/vue/2.7/vue.min.js') }}"></script>
-  <link rel="stylesheet" href="{{ asset('vendor/element-ui/element-ui.css') }}">
-  <script src="{{ asset('vendor/element-ui/element-ui.js') }}"></script>
-  <!-- Element UI 英文语言包（根据当前语言切换） -->
-  <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
-  <script>
-    // 根据系统语言设置 Element UI 的语言
-    (function(){
-      var currentLocale = '{{ locale_code() }}';
-      if (window.ELEMENT && currentLocale === 'en' && window.ELEMENT.lang && window.ELEMENT.lang.en) {
-        window.ELEMENT.locale(window.ELEMENT.lang.en);
-      }
-    })();
-  </script>
   <link rel="stylesheet" href="{{ asset('vendor/cropper/cropper.min.css') }}">
   <script src="{{ asset('vendor/cropper/cropper.min.js') }}"></script>
-  <script src="{{ asset('vendor/vuedraggable/vuedraggable.umd.min.js') }}"></script>
 
   @php($enabledDrivers = $enabled_drivers ?? ['local'])
   <script>
@@ -86,9 +71,9 @@
           // 错误处理
           if (error.response) {
             const message = error.response.data.message || '请求失败';
-            // 使用 Element UI 的消息提示
-            if (window.Vue && window.ELEMENT) {
-              ELEMENT.Message.error(message);
+            // 使用 Element Plus 的消息提示
+            if (window.ElementPlus) {
+              ElementPlus.ElMessage.error(message);
             }
 
             switch (error.response.status) {

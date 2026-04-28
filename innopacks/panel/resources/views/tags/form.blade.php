@@ -36,7 +36,7 @@
         <div class="card-body">
           <x-common-form-switch-radio title="{{ __('panel/common.whether_enable') }}" name="active" :value="old('active', $tag->active ?? true)"
             placeholder="{{ __('panel/common.whether_enable') }}" />
-          <x-common-form-input title="{{ __('panel/common.slug') }}" name="slug" :value="old('slug', $tag->slug ?? '')" placeholder="{{ __('panel/common.slug') }}" />
+          <x-common-form-input title="{{ __('panel/common.slug') }}" name="slug" :value="old('slug', $tag->slug ?? '')" placeholder="{{ __('panel/common.slug') }}" maxlength="60" />
           <x-common-form-input title="{{ __('common/base.position') }}" name="position" :value="old('position', $tag->position ?? 0)"
             />
         </div>

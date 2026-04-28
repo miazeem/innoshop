@@ -59,6 +59,7 @@ return [
     'themes'                 => 'Themes',
     'themes_settings'        => 'Themes Settings',
     'top_analytic'           => 'Analytic',
+    'announcements'          => 'Announcements',
     'top_content'            => 'Content',
     'top_report'             => 'Reports',
     'top_customer'           => 'Customer',

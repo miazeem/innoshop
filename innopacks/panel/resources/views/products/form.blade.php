@@ -1,4 +1,8 @@
-@extends('panel::layouts.app')
+@php
+  $routePrefix = $routePrefix ?? 'panel';
+  $layoutView  = $layoutView  ?? 'panel::layouts.app';
+@endphp
+@extends($layoutView)
 @section('body-class', 'page-product-form')
 @section('title', __('panel/menu.products'))
 
@@ -6,7 +10,7 @@
 
 @section('content')
   <form class="needs-validation no-load" novalidate
-    action="{{ $product->id ? panel_route('products.update', [$product->id]) : panel_route('products.store') }}"
+    action="{{ $product->id ? route($routePrefix . '.products.update', [$product->id]) : route($routePrefix . '.products.store') }}"
     method="POST" id="product-form">
     @csrf
     @method($product->id ? 'PUT' : 'POST')
@@ -87,8 +91,8 @@
 @endsection
 
 @push('footer')
-  <script src="https://unpkg.com/element-plus/dist/index.full.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  <script src="{{ asset('vendor/element-plus/index.full.js') }}"></script>
+  <link rel="stylesheet" href="{{ asset('vendor/element-plus/index.css') }}">
   <script>
     // Product form module
     const ProductForm = {

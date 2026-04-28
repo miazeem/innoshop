@@ -34,9 +34,9 @@ class PageRequest extends FormRequest
     public function rules(): array
     {
         if ($this->page) {
-            $slugRule = 'required|alpha_dash|unique:pages,slug,'.$this->page->id;
+            $slugRule = 'required|alpha_dash|max:60|unique:pages,slug,'.$this->page->id;
         } else {
-            $slugRule = 'required|alpha_dash|unique:pages,slug';
+            $slugRule = 'required|alpha_dash|max:60|unique:pages,slug';
         }
 
         $defaultLocale = setting_locale_code();

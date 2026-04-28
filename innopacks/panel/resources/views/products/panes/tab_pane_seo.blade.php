@@ -2,7 +2,7 @@
      tabindex="4">
   <x-common-form-input :title="__('panel/common.slug')" name="slug" :value="old('slug', $product->slug ?? '')"
                        :placeholder="__('panel/common.slug')"
-                       column="product_slug" :generate="true"
+                       column="product_slug" :generate="true" maxlength="60"
                        description="{{ __('panel/common.slug_description') }}"/>
 
   <div class="mb-3">

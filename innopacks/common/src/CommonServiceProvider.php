@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 use InnoShop\Common\Components\Base;
 use InnoShop\Common\Components\Forms;
 use InnoShop\Common\Console\Commands;
+use InnoShop\Common\Services\Notification\NotificationEventSubscriber;
 use InnoShop\Common\Services\StorageService;
 
 class CommonServiceProvider extends ServiceProvider
@@ -48,6 +49,31 @@ class CommonServiceProvider extends ServiceProvider
         $this->loadMailSettings();
         $this->loadViewComponents();
         $this->loadViewTemplates();
+        $this->registerTopbarAnnouncements();
+        $this->registerNotificationListeners();
+    }
+
+    /**
+     * Register default topbar announcement hook filter.
+     * Plugins can append via `front.topbar.announcements`, or insert rows
+     * directly into the inno_topbar_announcements table.
+     */
+    private function registerTopbarAnnouncements(): void
+    {
+        listen_hook_filter('front.announcements', function (array $items): array {
+            $dbItems = Models\Announcement::getActiveItems();
+
+            return array_merge($items, $dbItems);
+        }, 10);
+    }
+
+    /**
+     * Register system event listeners for the notification system.
+     * Queue failures, long waits, etc.
+     */
+    private function registerNotificationListeners(): void
+    {
+        NotificationEventSubscriber::register();
     }
 
     /**

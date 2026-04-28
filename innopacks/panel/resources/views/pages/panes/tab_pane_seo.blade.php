@@ -2,7 +2,7 @@
 
   <x-common-form-input title="{{ __('panel/common.slug') }}" name="slug"
     :value="old('slug', $page->slug ?? '')"
-    placeholder="{{ __('panel/common.slug') }}" />
+    placeholder="{{ __('panel/common.slug') }}" maxlength="60" />
 
   <div class="mb-3">
     <label class="form-label">{{ __('panel/setting.meta_title') }}</label>

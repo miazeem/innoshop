@@ -74,6 +74,9 @@ class HomeRepo
                 continue;
             }
 
+            $imagePath = (string) ($images[$locale] ?? '');
+            $isVideo   = (bool) preg_match('/\.(mp4|webm|ogg)(\?|$)/i', $imagePath);
+
             $titles    = is_array($item['title'] ?? null) ? $item['title'] : [];
             $subtitles = is_array($item['subtitle'] ?? null) ? $item['subtitle'] : [];
 
@@ -85,6 +88,7 @@ class HomeRepo
             $item['display_subtitle']      = $displaySubtitle;
             $item['image_alt']             = $displayTitle !== '' ? $displayTitle : __('front/common.home');
             $item['has_slideshow_caption'] = $displayTitle !== '' || $displaySubtitle !== '';
+            $item['is_video']              = $isVideo;
 
             $out[] = $item;
         }

@@ -1,17 +1,12 @@
 @push('footer')
   <script>
-    new Vue({
-      el: '#app',
+    const __fmApp = Vue.createApp({
       created() {},
       mounted() {
-        this.loadFiles();
         this.loadFolders();
 
         // 获取当前存储配置
         this.getStorageConfig();
-        
-        // 确保上传路径正确初始化
-        this.updateUploadPath();
       },
       data() {
         return {
@@ -36,6 +31,7 @@
             total: 0
           },
           loading: false,
+          previewImageUrl: '',
           uploadDialog: {
             visible: false
           },
@@ -125,49 +121,49 @@
               value: 'local',
               label: "{{ __('panel/file_manager.local_storage') }}",
               desc: "{{ __('panel/file_manager.local_storage_desc') }}",
-              icon: 'el-icon-monitor',
+              icon: 'Monitor',
             },
             {
               value: 'oss',
               label: "{{ __('panel/file_manager.alibaba_oss') }}",
               desc: "{{ __('panel/file_manager.alibaba_oss_desc') }}",
-              icon: 'el-icon-cloudy',
+              icon: 'Cloudy',
             },
             {
               value: 'cos',
               label: "{{ __('panel/file_manager.tencent_cos') }}",
               desc: "{{ __('panel/file_manager.tencent_cos_desc') }}",
-              icon: 'el-icon-upload2',
+              icon: 'Upload',
             },
             {
               value: 'qiniu',
               label: "{{ __('panel/file_manager.qiniu') }}",
               desc: "{{ __('panel/file_manager.qiniu_desc') }}",
-              icon: 'el-icon-data-line',
+              icon: 'TrendCharts',
             },
             {
               value: 's3',
               label: "{{ __('panel/file_manager.aws_s3') }}",
               desc: "{{ __('panel/file_manager.aws_s3_desc') }}",
-              icon: 'el-icon-coordinate',
+              icon: 'Coordinate',
             },
             {
               value: 'obs',
               label: "{{ __('panel/setting.storage_driver_obs') }}",
               desc: 'Huawei Cloud OBS',
-              icon: 'el-icon-office-building',
+              icon: 'OfficeBuilding',
             },
             {
               value: 'r2',
               label: "{{ __('panel/setting.storage_driver_r2') }}",
               desc: 'Cloudflare R2',
-              icon: 'el-icon-lightning',
+              icon: 'Promotion',
             },
             {
               value: 'minio',
               label: "{{ __('panel/setting.storage_driver_minio') }}",
               desc: 'MinIO',
-              icon: 'el-icon-box',
+              icon: 'Box',
             },
           ].filter(function(opt) {
             var enabled = window.fileManagerConfig.enabledDrivers || ['local'];
@@ -290,8 +286,8 @@
         handleNodeClick(data) {
           this.currentFolder = data;
           this.loadFiles(data.path);
-          // 更新上传路径
           this.updateUploadPath();
+          this.saveCurrentPath(data.path);
         },
         loadFiles(path = null) {
           this.loading = true;
@@ -473,8 +469,16 @@
                 height: 800
               });
 
+              // Determine output format based on original file type
+              const mimeType = file.type && file.type !== 'image/gif' ? file.type : 'image/png';
+              const ext = mimeType === 'image/jpeg' ? '.jpg' : (mimeType === 'image/webp' ? '.webp' : '.png');
+              const baseName = file.name.replace(/\.[^.]+$/, '');
+              const outputName = baseName + '_cropped' + ext;
+
               canvas.toBlob((blob) => {
-                this.uploadFileToServer(blob, this.uploadData.path, 'images')
+                // Wrap blob in a File to preserve filename and MIME type
+                const croppedFile = new File([blob], outputName, { type: mimeType });
+                this.uploadFileToServer(croppedFile, this.uploadData.path, 'images')
                   .then(() => {
                     // 上传成功后，重置到第一页并重新加载文件列表，确保新上传的文件显示在最前面
                     this.pagination.page = 1;
@@ -533,6 +537,39 @@
           }
         },
 
+        // 保存当前路径到 localStorage
+        saveCurrentPath(path) {
+          try { localStorage.setItem('file_manager_last_path', path || '/'); } catch(e) {}
+        },
+
+        // 获取上次记住的路径
+        getSavedPath() {
+          try { return localStorage.getItem('file_manager_last_path') || '/'; } catch(e) { return '/'; }
+        },
+
+        // 在树中递归查找路径对应的节点
+        findNode(nodes, path) {
+          for (const n of nodes) {
+            if (n.path === path) return n;
+            if (n.children) {
+              const found = this.findNode(n.children, path);
+              if (found) return found;
+            }
+          }
+          return null;
+        },
+
+        // 从路径生成祖先 key 列表（用于 el-tree 展开节点）
+        ancestorKeys(path) {
+          const keys = ['/'];
+          let cur = '';
+          for (const seg of path.split('/').filter(Boolean)) {
+            cur += '/' + seg;
+            keys.push(cur);
+          }
+          return keys;
+        },
+
         // 获取文件夹树
         loadFolders() {
           http.get('file_manager/directories').then(res => {
@@ -557,7 +594,6 @@
                 children: root.children ? normalize(root.children) : []
               }];
             } else {
-              // Fallback: flat or tree without root wrapper
               this.folders = [{
                 id: '/',
                 name: "{{ __('panel/file_manager.root_name') }}",
@@ -567,18 +603,23 @@
               }];
             }
 
-            // 默认选中根目录
-            this.currentFolder = {
-              id: '/',
-              name: "{{ __('panel/file_manager.root_name') }}",
-              path: '/'
-            };
+            // 恢复上次记住的路径，找不到则回退根目录
+            const rootFolder = { id: '/', name: "{{ __('panel/file_manager.root_name') }}", path: '/' };
+            const savedPath = this.getSavedPath();
+            const node = savedPath !== '/' ? this.findNode(this.folders, savedPath) : null;
 
-            // 设置默认展开的节点
-            this.defaultExpandedKeys = ['/'];
+            this.currentFolder = node || rootFolder;
+            this.defaultExpandedKeys = node ? this.ancestorKeys(savedPath) : ['/'];
+            this.loadFiles(this.currentFolder.path);
+            this.updateUploadPath();
 
-            // 加载根目录的文件
-            this.loadFiles('/');
+            // 默认选中上次的目录节点
+            this.$nextTick(() => {
+              const tree = this.$refs.folderTree;
+              if (tree && this.currentFolder) {
+                tree.setCurrentKey(this.currentFolder.id);
+              }
+            });
           }).catch(err => {
             this.$message.error("{{ __('panel/file_manager.error_load_folders_prefix') }}" + err.message);
           });
@@ -937,6 +978,9 @@
             // 加载目标文件夹的内容
             this.loadFiles(targetPath);
 
+            // 记住当前路径
+            this.saveCurrentPath(targetPath);
+
             // 同步左侧树的选中状态
             this.$nextTick(() => {
               const treeComponent = this.$refs.folderTree;
@@ -947,10 +991,7 @@
           } else {
             // 如果是图片文件
 
-            const mainApp = document.querySelector('#app').__vue__;
-            if (mainApp && typeof mainApp.confirmSelection === 'function') {
-              mainApp.confirmSelection();
-            }
+            this.confirmSelection();
           }
         },
 
@@ -1106,11 +1147,7 @@
           });
         },
         handleConfirm() {
-          // 获取主 Vue 实例并调用其方法
-          const mainApp = document.querySelector('#app').__vue__;
-          if (mainApp && typeof mainApp.confirmSelection === 'function') {
-            mainApp.confirmSelection();
-          }
+          this.confirmSelection();
         },
         // 树节点接收拖拽进入
         handleTreeDragEnter(event, node, data) {
@@ -1409,6 +1446,10 @@
           this.videoDialog.visible = true;
         },
 
+        showPreview(file) {
+          this.previewImageUrl = file.origin_url || file.url;
+        },
+
         onVideoDialogClose() {
           this.videoDialog.url = '';
         },
@@ -1430,10 +1471,16 @@
           this.loadFiles();
         },
       },
-      beforeDestroy() {
+      beforeUnmount() {
         document.removeEventListener('click', this.hideContextMenu);
         document.removeEventListener('click', this.hideFolderContextMenu);
-      }
+      },
     });
+    __fmApp.use(ElementPlus, window.ElementPlusLocaleZhCn ? { locale: ElementPlusLocaleZhCn } : {});
+    // Register all icons globally (official approach from Element Plus docs)
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+      __fmApp.component(key, component);
+    }
+    __fmApp.mount('#app');
   </script>
 @endpush

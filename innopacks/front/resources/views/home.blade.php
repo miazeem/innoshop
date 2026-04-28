@@ -19,9 +19,15 @@
               <div class="swiper-slide">
                 <a href="{{ $slide['link'] ?: 'javascript:void(0)' }}"
                    class="home-slideshow-link">
-                  <img src="{{ image_origin($slide['image'][$slide['locale']]) }}"
-                       class="img-fluid"
-                       alt="{{ $slide['image_alt'] }}">
+                  @if(!empty($slide['is_video']))
+                    <video autoplay muted loop playsinline class="home-slideshow-video">
+                      <source src="{{ image_origin($slide['image'][$slide['locale']]) }}" type="video/mp4">
+                    </video>
+                  @else
+                    <img src="{{ image_origin($slide['image'][$slide['locale']]) }}"
+                         class="img-fluid"
+                         alt="{{ $slide['image_alt'] }}">
+                  @endif
                   @if (! empty($slide['has_slideshow_caption']))
                     <div class="home-slideshow-caption">
                       @if ($slide['display_title'] !== '')
@@ -29,6 +35,9 @@
                       @endif
                       @if ($slide['display_subtitle'] !== '')
                         <p class="home-slideshow-subtitle">{!! nl2br(e($slide['display_subtitle'])) !!}</p>
+                      @endif
+                      @if ($slide['link'] && $slide['link'] !== 'javascript:void(0)')
+                        <span class="home-slideshow-btn">{{ __('front/common.shop_now') }}</span>
                       @endif
                     </div>
                   @endif

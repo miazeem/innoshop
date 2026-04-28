@@ -1,5 +1,28 @@
 $headerToph: 40px;
 
+.announcement-bar {
+  background: #333;
+  color: #fff;
+  font-size: 13px;
+  text-align: center;
+  overflow: hidden;
+  height: 36px;
+  line-height: 36px;
+
+  a, span {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .announcement-bar__swiper {
+    height: 36px;
+  }
+}
+
 header {
   .dropdown {
     cursor: pointer;

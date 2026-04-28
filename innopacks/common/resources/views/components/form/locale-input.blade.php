@@ -51,7 +51,7 @@ $modalId = 'locale-modal-' . $uid;
      data-front-locale="{{ $frontLocale }}"
      data-modal-id="{{ $modalId }}"
      data-field-label="{{ $label ?: $name }}"
-     @if($required && !$isSameLocale) data-front-required="true" @endif>
+     @if($required && !$isSameLocale && $hasOthers) data-front-required="true" @endif>
 
   {{-- Main input: primary language directly editable --}}
   <div class="input-group mb-2">

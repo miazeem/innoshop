@@ -455,6 +455,17 @@ class MarketplaceService
     }
 
     /**
+     * 查询订单支付状态
+     */
+    public function checkOrderStatus(int $orderNumber): mixed
+    {
+        $uri      = '/checkout/order_status/'.$orderNumber;
+        $response = $this->client->get($uri);
+
+        return $this->response($response);
+    }
+
+    /**
      * Download plugin from API and extract.
      *
      * @param  $id
@@ -477,7 +488,15 @@ class MarketplaceService
 
         $datetime = date('Y-m-d');
 
-        $content = $this->client->get($uri)->body();
+        $response = $this->client->get($uri);
+
+        if (! $response->successful()) {
+            $result = $response->json();
+            $error  = is_array($result) ? ($result['message'] ?? $response->body()) : $response->body();
+            throw new Exception('下载失败: '.$error);
+        }
+
+        $content = $response->body();
 
         $pluginPath = "plugins/$id-$datetime.zip";
         Storage::disk('local')->put($pluginPath, $content);

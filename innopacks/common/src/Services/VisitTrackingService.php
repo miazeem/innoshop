@@ -57,7 +57,7 @@ class VisitTrackingService
             }
 
             // Parse user agent
-            $this->detect->setUserAgent($request->userAgent());
+            $this->detect->setUserAgent($request->userAgent() ?? '');
 
             // Get location information
             $ip       = $this->getClientIp($request);

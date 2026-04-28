@@ -58,6 +58,7 @@
                                    elID="content-{{ $localeCode }}"
                                    value="{{ old('translations.' . $localeCode . '.content', $product->translate($localeCode, 'content')) }}"
                                    required placeholder="{{ __('panel/product.describe') }}"
+                                   maxlength="20000"
                                    data-locale="{{ $localeCode }}"/>
         </div>
       </div>

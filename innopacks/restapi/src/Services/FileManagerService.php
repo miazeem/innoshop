@@ -12,6 +12,7 @@ namespace InnoShop\RestAPI\Services;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use InnoShop\Common\Services\FileSecurityValidator;
 use InnoShop\Common\Services\StorageService;
 
@@ -346,7 +347,12 @@ class FileManagerService implements FileManagerInterface
         $savePath = FileSecurityValidator::validateDirectoryPath($savePath);
 
         $originName = $this->getUniqueFileName($savePath, $originName);
-        $filePath   = $file->storeAs($savePath, $originName, 'media');
+        $options    = [];
+        $mimeType   = $file->getMimeType();
+        if ($mimeType) {
+            $options['ContentType'] = $mimeType;
+        }
+        $filePath = Storage::disk('media')->putFileAs($savePath, $file, $originName, $options);
 
         return StorageService::storageKey($filePath);
     }
@@ -652,7 +658,7 @@ class FileManagerService implements FileManagerInterface
 
             $item['mime']       = $mime;
             $item['origin_url'] = storage_url($path);
-            $item['url']        = str_starts_with($mime, 'image/') ? image_resize($path) : asset('images/panel/doc.png');
+            $item['url']        = str_starts_with($mime, 'image/') ? image_resize($path, 300, 300, 'contain') : asset('images/panel/doc.png');
             $item['thumb']      = str_starts_with($mime, 'image/') ? storage_url($path) : asset('images/panel/doc.png');
 
             unset($item['_realPath'], $item['created_time']);

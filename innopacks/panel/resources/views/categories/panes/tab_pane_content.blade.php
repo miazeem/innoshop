@@ -56,6 +56,7 @@
                                    elID="content-{{ $locale->code }}"
                                    value="{{ old('translations.' . $locale->code . '.content', $category->translate($locale->code, 'content')) }}"
                                    placeholder="{{ panel_trans('category.content') }}"
+                                   maxlength="20000"
                                    data-locale="{{ $locale->code }}"/>
           <div class="mt-2 text-muted small">
             <i class="bi bi-info-circle me-1"></i>{{ panel_trans('category.content_description') }}
@@ -63,6 +64,6 @@
         </div>
 
       </div>
-    @endforeach>
+    @endforeach
   </div>
 </div>

@@ -1,9 +1,15 @@
-@extends('panel::layouts.app')
+@php
+  $routePrefix      = $routePrefix ?? 'panel';
+  $layoutView       = $layoutView  ?? 'panel::layouts.app';
+  $showBulkActions  = $showBulkActions ?? true;
+  $showCopyAction   = $showCopyAction ?? true;
+@endphp
+@extends($layoutView)
 @section('body-class', 'page-product')
 @section('title', __('panel/menu.products'))
 
 @section('page-title-right')
-  <a href="{{ panel_route('products.create') }}" class="btn btn-primary"><i class="bi bi-plus-square"></i> {{
+  <a href="{{ route($routePrefix . '.products.create') }}" class="btn btn-primary"><i class="bi bi-plus-square"></i> {{
   __('common/base.create') }}</a>
 @endsection
 
@@ -12,7 +18,7 @@
     <div class="card-body">
 
       <x-panel-data-data-search
-        :action="panel_route('products.index')"
+        :action="route($routePrefix . '.products.index')"
         :searchFields="$searchFields ?? []"
         :filters="$filterButtons ?? []"
         :enableDateRange="true"
@@ -20,7 +26,9 @@
 
       <div class="mb-3 p-3 bg-light rounded border" id="products-toolbar">
         <div class="d-flex d-md-flex flex-column flex-md-row justify-content-md-between align-items-start gap-3">
-          @include('panel::products.bulk.actions')
+          @if($showBulkActions)
+            @include('panel::products.bulk.actions')
+          @endif
 
           <div class="toolbar-right d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 gap-md-3">
             <x-panel-data-info :paginator="$products ?? null"/>
@@ -34,7 +42,7 @@
           <table class="table align-middle">
             <thead>
             <tr>
-              <th><input class="form-check-input" @click="checkAll" type="checkbox" ref="checkAllBox"></th>
+              @if($showBulkActions)<th><input class="form-check-input" @click="checkAll" type="checkbox" ref="checkAllBox"></th>@endif
               <th>{{ __('common/base.id') }}</th>
               <th class="wp-100">{{ __('common/base.image') }}</th>
               <th>{{ __('common/base.name') }}</th>
@@ -49,8 +57,8 @@
             <tbody>
             @foreach ($products as $product)
               <tr>
-                <td><input class="form-check-input" type="checkbox" :value="{{ $product->id }}" v-model="checkedIds">
-                </td>
+                @if($showBulkActions)<td><input class="form-check-input" type="checkbox" :value="{{ $product->id }}" v-model="checkedIds">
+                </td>@endif
                 <td>{{ $product->id }}</td>
                 <td>
                   <div class="d-flex align-items-center justify-content-center wh-50 border">
@@ -77,24 +85,26 @@
                         <div class="small text-muted">{{ \Carbon\Carbon::parse($product->updated_at)->format('Y-m-d') }}</div>
                     </div>
                 </td>
-                <td>@include('panel::shared.list_switch', ['value' => $product->active, 'url' =>panel_route('products.active', $product->id)])</td>
+                <td>@include('panel::shared.list_switch', ['value' => $product->active, 'url' => route($routePrefix . '.products.active', $product->id)])</td>
                 @hookinsert('panel.product.list.table.row.after', $product)
                 <td>
                   <div class="d-flex gap-2">
                     <div>
-                      <a href="{{ panel_route('products.edit', [$product->id]) }}">
+                      <a href="{{ route($routePrefix . '.products.edit', [$product->id]) }}">
                         <el-button size="small" plain type="primary">{{
                         __('common/base.edit')}}</el-button>
                       </a>
                     </div>
+                    @if($showCopyAction)
                     <div>
-                      <a href="{{ panel_route('products.copy', [$product->id]) }}">
+                      <a href="{{ route($routePrefix . '.products.copy', [$product->id]) }}">
                         <el-button size="small" plain type="warning">{{
                         __('common/base.copy')}}</el-button>
                       </a>
                     </div>
+                    @endif
                     <div>
-                      <form ref="deleteForm" action="{{ panel_route('products.destroy', [$product->id]) }}"
+                      <form ref="deleteForm" action="{{ route($routePrefix . '.products.destroy', [$product->id]) }}"
                             method="POST"
                             class="d-inline">
                         @csrf
@@ -116,7 +126,9 @@
       @endif
 
       {{-- Bulk Actions Modals --}}
-      @include('panel::products.bulk.modals')
+      @if($showBulkActions)
+        @include('panel::products.bulk.modals')
+      @endif
 
     </div>
   @endsection
@@ -158,7 +170,7 @@
               type: 'warning',
             }
           ).then(() => {
-            deleteForm.value.action = urls.panel_base + '/products/' + index;
+            deleteForm.value.action = '{{ url('/') }}/' + '{{ $routePrefix }}' + '/products/' + index;
             deleteForm.value.submit();
           }).catch(() => {
           });
@@ -189,7 +201,7 @@
               background: 'rgba(0, 0, 0, 0.7)'
             });
 
-            axios.delete("{{ panel_route('products.destroy.batch') }}", {
+            axios.delete("{{ $showBulkActions ? route($routePrefix . '.products.destroy.batch') : '' }}", {
               data: {
                 ids: checkedIds.value
               }
@@ -288,7 +300,7 @@
             background: 'rgba(0, 0, 0, 0.7)'
           });
 
-          axios.post("{{ panel_route('products.bulk.update') }}", payload).then(response => {
+          axios.post("{{ $showBulkActions ? route($routePrefix . '.products.bulk.update') : '' }}", payload).then(response => {
               if (response && response.success) {
                 ElMessage({
                   type: 'success', 

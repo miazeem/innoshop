@@ -12,6 +12,7 @@ namespace InnoShop\Front\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use InnoShop\Common\Models\Order;
 use InnoShop\Common\Repositories\OrderRepo;
 
 class PaymentController extends Controller
@@ -24,8 +25,7 @@ class PaymentController extends Controller
      */
     public function success(Request $request)
     {
-        $orderNumber = $request->get('order_number');
-        $order       = $orderNumber ? OrderRepo::getInstance()->builder(['number' => $orderNumber])->first() : null;
+        $order = $this->resolveOrderFromRequest($request);
 
         return inno_view('payment.success', ['order' => $order]);
     }
@@ -56,5 +56,27 @@ class PaymentController extends Controller
         $order       = $orderNumber ? OrderRepo::getInstance()->builder(['number' => $orderNumber])->first() : null;
 
         return inno_view('payment.cancel', ['order' => $order]);
+    }
+
+    /**
+     * Resolve order from request params.
+     * Supports: order_number, out_trade_no (format: {id}-{timestamp})
+     */
+    private function resolveOrderFromRequest(Request $request): ?Order
+    {
+        $orderNumber = $request->get('order_number');
+        if ($orderNumber) {
+            return OrderRepo::getInstance()->builder(['number' => $orderNumber])->first();
+        }
+
+        $outTradeNo = $request->get('out_trade_no');
+        if ($outTradeNo && str_contains($outTradeNo, '-')) {
+            $orderId = (int) explode('-', $outTradeNo)[0];
+            if ($orderId) {
+                return OrderRepo::getInstance()->builder(['id' => $orderId])->first();
+            }
+        }
+
+        return null;
     }
 }

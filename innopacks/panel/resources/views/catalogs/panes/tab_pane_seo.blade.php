@@ -2,7 +2,7 @@
 
   <x-common-form-input title="{{ __('panel/common.slug') }}" name="slug"
     :value="old('slug', $catalog->slug ?? '')"
-    placeholder="{{ __('panel/common.slug') }}" />
+    placeholder="{{ __('panel/common.slug') }}" maxlength="60" />
 
   {{-- 摘要 (多语言) --}}
   <div class="mb-3">

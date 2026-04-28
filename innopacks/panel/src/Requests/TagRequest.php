@@ -34,9 +34,9 @@ class TagRequest extends FormRequest
     public function rules(): array
     {
         if ($this->tag) {
-            $slugRule = 'required|alpha_dash|unique:tags,slug,'.$this->tag->id;
+            $slugRule = 'required|alpha_dash|max:60|unique:tags,slug,'.$this->tag->id;
         } else {
-            $slugRule = 'required|alpha_dash|unique:tags,slug';
+            $slugRule = 'required|alpha_dash|max:60|unique:tags,slug';
         }
 
         $defaultLocale = setting_locale_code();

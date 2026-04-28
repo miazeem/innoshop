@@ -60,6 +60,7 @@ return [
     'themes'                 => '主题切换',
     'themes_settings'        => '界面设置',
     'top_analytic'           => '分析',
+    'announcements'          => '公告管理',
     'top_content'            => '内容',
     'top_report'             => '报表',
     'top_customer'           => '客户',
